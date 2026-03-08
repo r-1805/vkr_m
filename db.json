@@ -1,0 +1,20 @@
+{
+  "conferences": [
+    {
+      "id": 1,
+      "title": "ИНТЕР ЭКСПО ГЕО-Сибирь 2025",
+      "description": "XVIII Международная выставка и научный конгресс...",
+      "start_date": "2025-05-17",
+      "end_date": "2025-05-19",
+      "image": "https://sgugit.ru/upload/files-for-news/2025/1112/12.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Цифровые технологии в геодезии",
+      "description": "Студенческая конференция по итогам года...",
+      "start_date": "2025-06-01",
+      "end_date": "2025-06-05",
+      "image": null
+    }
+  ]
+}
