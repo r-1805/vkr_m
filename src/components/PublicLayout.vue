@@ -28,6 +28,8 @@ const accountLabel = computed(() => {
 
 const accountRoute = computed(() => defaultRouteForRole(state.role));
 const isAuthRoute = computed(() => ["login", "register"].includes(String(route.name)));
+const isHomeRoute = computed(() => route.name === "home");
+
 const themeClass = computed(() => {
   if (
     ["login", "register", "cabinet-profile", "cabinet-events", "cabinet-event-detail", "cabinet-draft", "cabinet-archive"].includes(
@@ -58,7 +60,7 @@ const handleLogout = async () => {
 
 <template>
   <div class="app-shell" :class="themeClass">
-    <header class="topbar">
+    <header class="topbar" :class="{ 'topbar-home': isHomeRoute }">
       <RouterLink class="brand" :to="{ name: 'home' }">
         <img class="brand-logo" :src="headerLogo" alt="Логотип СГУГиТ">
       </RouterLink>
@@ -74,7 +76,12 @@ const handleLogout = async () => {
           {{ item.label }}
         </RouterLink>
 
-        <RouterLink v-if="!isAuthenticated" class="nav-link" :class="{ active: route.name === 'login' || route.name === 'register' }" :to="{ name: 'login' }">
+        <RouterLink
+          v-if="!isAuthenticated"
+          class="nav-link"
+          :class="{ active: route.name === 'login' || route.name === 'register' }"
+          :to="{ name: 'login' }"
+        >
           Войти
         </RouterLink>
 
@@ -82,13 +89,14 @@ const handleLogout = async () => {
           {{ accountLabel }}
         </RouterLink>
       </nav>
+
     </header>
 
     <main class="page-body" :class="{ 'auth-body': isAuthRoute }">
       <slot />
     </main>
 
-    <footer class="footer" :class="{ 'auth-footer': isAuthRoute }">
+    <footer class="footer" :class="{ 'auth-footer': isAuthRoute, 'footer-home': isHomeRoute }">
       <div>
         <p class="footer-title">Адрес</p>
         <p>630108, г. Новосибирск, ул. Плахотного, 10</p>

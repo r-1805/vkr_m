@@ -1,23 +1,52 @@
 <script setup>
 import { computed, reactive } from "vue";
-import { RouterLink, useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import PublicLayout from "@/components/PublicLayout.vue";
-import { registerSteps } from "@/data/appData";
 
 const route = useRoute();
 const router = useRouter();
 
 const form = reactive({
-  name: "Иванов Иван Иванович",
-  email: "user@example.com",
-  role: "user",
+  email: "",
   code: "",
+  phone: "",
   password: "",
-  passwordRepeat: ""
+  isRobotChecked: false
 });
 
-const step = computed(() => route.params.step);
-const currentStep = computed(() => registerSteps.find((item) => item.id === step.value));
+const step = computed(() => String(route.params.step || "start"));
+
+const stepMeta = computed(() => {
+  if (step.value === "code") {
+    return {
+      title: "РЕГИСТРАЦИЯ",
+      placeholder: "Введите код",
+      button: "Далее"
+    };
+  }
+
+  if (step.value === "password") {
+    return {
+      title: "РЕГИСТРАЦИЯ",
+      phonePlaceholder: "Телефон",
+      passwordPlaceholder: "Пароль",
+      button: "Далее"
+    };
+  }
+
+  if (step.value === "done") {
+    return {
+      title: "РЕГИСТРАЦИЯ",
+      button: "Перейти ко входу"
+    };
+  }
+
+  return {
+    title: "РЕГИСТРАЦИЯ",
+    placeholder: "Укажите почту",
+    button: "Получить код"
+  };
+});
 
 const goNext = async () => {
   if (step.value === "start") {
@@ -43,73 +72,64 @@ const goNext = async () => {
   <PublicLayout>
     <section class="auth-wrap register-screen">
       <article class="auth-card register-card">
-        <p class="badge blue">{{ currentStep?.title }}</p>
-        <h1>{{ currentStep?.caption }}</h1>
+        <h1>{{ stepMeta.title }}</h1>
 
-        <div class="step-row">
-          <span
-            v-for="item in registerSteps"
-            :key="item.id"
-            class="step-pill"
-            :class="{ active: item.id === step }"
-          >
-            {{ item.title }}
-          </span>
-        </div>
-
-        <form class="form-grid" @submit.prevent="goNext">
+        <form class="register-form" @submit.prevent="goNext">
           <template v-if="step === 'start'">
-            <label>
-              <span>ФИО</span>
-              <input v-model="form.name" type="text">
+            <input
+              v-model="form.email"
+              class="register-input"
+              type="email"
+              :placeholder="stepMeta.placeholder"
+              autocomplete="email"
+            >
+
+            <label class="register-check">
+              <input v-model="form.isRobotChecked" type="checkbox">
+              <span>Я не робот</span>
             </label>
-            <label>
-              <span>E-mail</span>
-              <input v-model="form.email" type="email">
-            </label>
-            <label>
-              <span>Роль</span>
-              <select v-model="form.role">
-                <option value="user">Участник</option>
-                <option value="organizer">Преподаватель</option>
-              </select>
-            </label>
-            <button class="btn full" type="submit">Получить код</button>
+
+            <button class="register-submit" type="submit">{{ stepMeta.button }}</button>
           </template>
 
           <template v-else-if="step === 'code'">
-            <label>
-              <span>Код из сообщения</span>
-              <input v-model="form.code" type="text" maxlength="4" placeholder="1234">
-            </label>
-            <button class="btn full" type="submit">Далее</button>
+            <input
+              v-model="form.code"
+              class="register-input"
+              type="text"
+              maxlength="4"
+              :placeholder="stepMeta.placeholder"
+              inputmode="numeric"
+            >
+
+            <button class="register-submit" type="submit">{{ stepMeta.button }}</button>
           </template>
 
           <template v-else-if="step === 'password'">
-            <label>
-              <span>Пароль</span>
-              <input v-model="form.password" type="password">
-            </label>
-            <label>
-              <span>Повторите пароль</span>
-              <input v-model="form.passwordRepeat" type="password">
-            </label>
-            <button class="btn full" type="submit">Далее</button>
+            <input
+              v-model="form.phone"
+              class="register-input"
+              type="text"
+              :placeholder="stepMeta.phonePlaceholder"
+              autocomplete="tel"
+            >
+
+            <input
+              v-model="form.password"
+              class="register-input"
+              type="password"
+              :placeholder="stepMeta.passwordPlaceholder"
+              autocomplete="new-password"
+            >
+
+            <button class="register-submit" type="submit">{{ stepMeta.button }}</button>
           </template>
 
           <template v-else>
-            <div class="success-box">
-              <h3>Аккаунт создан</h3>
-              <p>Регистрация завершена. Для входа используй форму авторизации.</p>
-            </div>
-            <button class="btn full" type="submit">Перейти ко входу</button>
+            <p class="register-note">Аккаунт создан. Теперь можно перейти ко входу.</p>
+            <button class="register-submit" type="submit">{{ stepMeta.button }}</button>
           </template>
         </form>
-
-        <p class="switch-link">
-          Уже есть аккаунт?
-          <RouterLink :to="{ name: 'login' }">войти</RouterLink>
-        </p>
       </article>
     </section>
   </PublicLayout>

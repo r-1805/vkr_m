@@ -1,6 +1,6 @@
 <script setup>
 import { reactive } from "vue";
-import { useRouter } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import PublicLayout from "@/components/PublicLayout.vue";
 import { useAuth } from "@/composables/useAuth";
 
@@ -8,20 +8,35 @@ const router = useRouter();
 const { login, defaultRouteForRole } = useAuth();
 
 const form = reactive({
-  name: "Иванов Иван Иванович",
-  email: "user@example.com",
-  password: "",
-  role: "user"
+  loginValue: "",
+  password: ""
 });
 
-const handleLogin = async () => {
-  login({
-    role: form.role,
-    name: form.name,
-    email: form.email
-  });
+const resolveRole = (value) => {
+  const normalized = String(value || "").trim().toLowerCase();
 
-  await router.push(defaultRouteForRole(form.role));
+  if (normalized.includes("admin")) {
+    return "admin";
+  }
+
+  if (normalized.includes("organizer") || normalized.includes("teacher")) {
+    return "organizer";
+  }
+
+  return "user";
+};
+
+const handleLogin = async () => {
+  const role = resolveRole(form.loginValue);
+  const name = role === "admin"
+    ? "Администратор"
+    : role === "organizer"
+      ? "Преподаватель"
+      : "Иванов Иван Иванович";
+  const email = form.loginValue || "user@example.com";
+
+  login({ role, name, email });
+  await router.push(defaultRouteForRole(role));
 };
 </script>
 
@@ -29,41 +44,32 @@ const handleLogin = async () => {
   <PublicLayout>
     <section class="auth-wrap login-screen">
       <article class="auth-card login-card">
-        <p class="badge violet">Вход</p>
-        <h1>Личный кабинет</h1>
-        <p class="lead dark">
-          Для проверки логики роль выбирается прямо в форме. Так можно открыть кабинет участника,
-          преподавателя или администратора.
-        </p>
+        <h1>ВХОД</h1>
 
-        <form class="form-grid" @submit.prevent="handleLogin">
-          <label>
-            <span>ФИО</span>
-            <input v-model="form.name" type="text" placeholder="Введите ФИО">
-          </label>
-          <label>
-            <span>E-mail</span>
-            <input v-model="form.email" type="email" placeholder="Введите e-mail">
-          </label>
-          <label>
-            <span>Пароль</span>
-            <input v-model="form.password" type="password" placeholder="Введите пароль">
-          </label>
-          <label>
-            <span>Роль</span>
-            <select v-model="form.role">
-              <option value="user">Участник</option>
-              <option value="organizer">Преподаватель</option>
-              <option value="admin">Администратор</option>
-            </select>
-          </label>
-          <button class="btn full" type="submit">Войти</button>
+        <form class="login-form" @submit.prevent="handleLogin">
+          <input
+            v-model="form.loginValue"
+            class="login-input"
+            type="text"
+            placeholder="Логин"
+            autocomplete="username"
+          >
+
+          <input
+            v-model="form.password"
+            class="login-input"
+            type="password"
+            placeholder="Пароль"
+            autocomplete="current-password"
+          >
+
+          <button class="login-submit" type="submit">Войти</button>
         </form>
 
-        <p class="switch-link">
+        <p class="login-switch">
           Нет аккаунта?
           <RouterLink :to="{ name: 'register', params: { step: 'start' } }">
-            зарегистрироваться
+            Зарегистрироваться
           </RouterLink>
         </p>
       </article>
