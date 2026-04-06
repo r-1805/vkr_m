@@ -63,6 +63,10 @@ const handleLogin = async () => {
             autocomplete="current-password"
           >
 
+          <button class="login-forgot" type="button">
+            Забыли пароль?
+          </button>
+
           <button class="login-submit" type="submit">Войти</button>
         </form>
 

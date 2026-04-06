@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import ModalBox from "@/components/ModalBox.vue";
 import PublicLayout from "@/components/PublicLayout.vue";
@@ -24,6 +24,24 @@ const list = computed(() =>
 const leadConference = computed(() => list.value[0]);
 const secondConference = computed(() => list.value[1]);
 const isApplyModalOpen = computed(() => route.name === "events-apply");
+const coauthors = ref([]);
+
+const createCoauthor = (index) => ({
+  id: `coauthor-${index + 1}`,
+  lastName: "Иванова",
+  firstName: "Мария",
+  middleName: "Александровна",
+  phone: "+7 (999) 123-45-67",
+  email: `coauthor${index + 1}@example.com`
+});
+
+const addCoauthor = () => {
+  if (coauthors.value.length >= 2) {
+    return;
+  }
+
+  coauthors.value.push(createCoauthor(coauthors.value.length));
+};
 </script>
 
 <template>
@@ -210,7 +228,82 @@ const isApplyModalOpen = computed(() => route.name === "events-apply");
                 <span>Отправить сборнику материалов</span>
               </label>
 
-              <button class="apply-inline-link" type="button">Добавить соавтора (Максимум 2)</button>
+              <button
+                class="apply-inline-link"
+                type="button"
+                :disabled="coauthors.length >= 2"
+                @click="addCoauthor"
+              >
+                Добавить соавтора (Максимум 2)
+              </button>
+            </div>
+          </section>
+
+          <section
+            v-for="(coauthor, index) in coauthors"
+            :key="coauthor.id"
+            class="apply-form-section"
+          >
+            <h3 class="apply-form-title">СОАВТОР {{ index + 1 }}</h3>
+
+            <div class="apply-modal-grid apply-modal-grid-double">
+              <label class="apply-field">
+                <span>Фамилия</span>
+                <input type="text" :value="coauthor.lastName">
+              </label>
+              <label class="apply-field">
+                <span>Организация (полное наименование)</span>
+                <select>
+                  <option>Организация (полное наименование)</option>
+                </select>
+              </label>
+
+              <label class="apply-field">
+                <span>Имя</span>
+                <input type="text" :value="coauthor.firstName">
+              </label>
+              <label class="apply-field">
+                <span>Организация (краткое наименование)</span>
+                <select>
+                  <option>Организация (краткое наименование)</option>
+                </select>
+              </label>
+
+              <label class="apply-field">
+                <span>Отчество</span>
+                <input type="text" :value="coauthor.middleName">
+              </label>
+              <label class="apply-field">
+                <span>Кафедра/отделение/лаборатория</span>
+                <select>
+                  <option>Кафедра/отделение/лаборатория</option>
+                </select>
+              </label>
+
+              <label class="apply-field">
+                <span>Телефон</span>
+                <input type="text" :value="coauthor.phone">
+              </label>
+              <label class="apply-field">
+                <span>Группа/направленность</span>
+                <select>
+                  <option>Группа/направленность</option>
+                </select>
+              </label>
+
+              <label class="apply-field">
+                <span>Email</span>
+                <input type="email" :value="coauthor.email">
+              </label>
+              <label class="apply-field">
+                <span>Статус</span>
+                <select>
+                  <option>Статус</option>
+                  <option>Студент</option>
+                  <option>Аспирант</option>
+                  <option>Молодой исследователь</option>
+                </select>
+              </label>
             </div>
           </section>
 

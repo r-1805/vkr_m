@@ -44,7 +44,7 @@ const profileFields = [
             </RouterLink>
           </div>
 
-          <RouterLink class="user-exit" :to="{ name: 'home' }">Выйти</RouterLink>
+          <button class="user-delete" type="button">Удалить аккаунт</button>
         </div>
 
         <h1 class="user-title">ЛИЧНЫЙ КАБИНЕТ</h1>

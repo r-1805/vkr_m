@@ -35,7 +35,9 @@ const isPhotosRoute = computed(() => route.name === "archive-photos");
     <section v-if="!isPhotosRoute" class="screen-archive archive-list-screen">
       <article v-for="event in archivedEvents" :key="event.id" class="archive-event-card">
         <div class="archive-event-info">
-          <h2>{{ event.title }}</h2>
+          <RouterLink class="archive-title-link" :to="{ name: 'archive-photos' }">
+            <h2>{{ event.title }}</h2>
+          </RouterLink>
           <p>{{ event.description }}</p>
 
           <div class="archive-event-actions">
