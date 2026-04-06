@@ -1,11 +1,12 @@
 <script setup>
 import { computed } from "vue";
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import { useAuth } from "@/composables/useAuth";
 import headerLogo from "@/img/header_logo.png";
 
 const route = useRoute();
-const { state, isAuthenticated, defaultRouteForRole } = useAuth();
+const router = useRouter();
+const { state, isAuthenticated, logout, defaultRouteForRole } = useAuth();
 
 const navItems = [
   { label: "Главная", to: { name: "home" }, match: ["home"] },
@@ -34,6 +35,11 @@ const accountActive = computed(() =>
 );
 
 const isActive = (item) => item.match.includes(currentRouteName.value);
+
+const handleLogout = async () => {
+  logout();
+  await router.push({ name: "home" });
+};
 </script>
 
 <template>
@@ -70,6 +76,15 @@ const isActive = (item) => item.match.includes(currentRouteName.value);
       >
         {{ accountLabel }}
       </RouterLink>
+
+      <button
+        v-if="isAuthenticated"
+        class="nav-link nav-link-button"
+        type="button"
+        @click="handleLogout"
+      >
+        Выйти
+      </button>
     </nav>
   </header>
 </template>
